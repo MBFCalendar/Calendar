@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Desk-Grade Commodity Calendar Builder V6</title>
+<title>Desk-Grade Commodity Calendar Builder V6.1 Fixed</title>
 <style>
 :root{--blue:#2f3a8f;--line:#24318f;--bg:#f6f7fb;--text:#172033}
 body{font-family:Arial,Helvetica,sans-serif;margin:22px;color:var(--text);background:var(--bg)}
@@ -29,7 +29,7 @@ table{border-collapse:collapse;width:100%;background:white}th,td{border:1px soli
 </style>
 </head>
 <body>
-<h1>Desk-Grade Commodity Calendar Builder V6 <span class="badge">Best Rule Version</span></h1>
+<h1>Desk-Grade Commodity Calendar Builder V6.1 Fixed <span class="badge">Best Rule Version</span></h1>
 <div class="small">Official expirations and last-day dates are entered manually. Pen dates are auto-derived as one business day before expiration/last day. Desk overlay cannot contain Pen labels without QA failure.</div>
 
 <div class="controls">
@@ -115,9 +115,9 @@ function requiredLabels(){
   "RB & HO Opts Exp","LAST DAY RB & HO",
   "Brent Opts Exp","LAST DAY BRENT",
   "VIX",
-  "USO - 1","USO - 2","USO - 3","USO - 4","USO - Last",
-  "UNG - 1","UNG - 2","UNG - 3","UNG - Last",
-  "BNO - 1","BNO - 2","BNO - 3","BNO - Last",
+  "USO - Last",
+  "UNG - Last",
+  "BNO - Last",
   "Rici Roll - Last Day","RICI Roll - 1","RICI Roll - 2"
  ];
 }
@@ -154,6 +154,7 @@ function buildEvents(y,m,official,overlay){
 function qa(events,y,m,official,overlay){
  let errors=[], warnings=[];
  requiredLabels().forEach(l=>{if(!hasReq(events,l))errors.push("Missing required input: "+l)});
+ ["USO - 1","USO - 2","USO - 3","USO - 4","UNG - 1","UNG - 2","UNG - 3","BNO - 1","BNO - 2","BNO - 3"].forEach(l=>{if(!hasReq(events,l))warnings.push("Optional roll leg missing: "+l)});
  let manualPens=hasPenLabel(official).concat(hasPenLabel(overlay));
  if(manualPens.length) errors.push("Manual Pen labels are not allowed in V6. Remove these: "+manualPens.join("; "));
  [["CL Opts Exp","LAST DAY CL"],["NG Opts Exp","LAST DAY NG"],["RB & HO Opts Exp","LAST DAY RB & HO"],["Brent Opts Exp","LAST DAY BRENT"]].forEach(([a,b])=>{
