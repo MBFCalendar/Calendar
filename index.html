@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Desk-Grade Commodity Calendar Builder V6.1 Fixed</title>
+<title>Desk-Grade Commodity Calendar Builder V8 Clean Save.3 Pen Fix</title>
 <style>
 :root{--blue:#2f3a8f;--line:#24318f;--bg:#f6f7fb;--text:#172033}
 body{font-family:Arial,Helvetica,sans-serif;margin:22px;color:var(--text);background:var(--bg)}
-h1{margin:0;font-size:25px}.small{color:#526070;font-size:13px}
+h1{margin:0;font-size:25px}.small{color:#526070;font-size:13px}.tight{margin-top:4px}
 .controls,.panel{background:#fff;border:1px solid #d8dee8;border-radius:12px;padding:14px;margin:12px 0}
 label{font-weight:700;margin-right:6px}input,textarea,button{font-size:14px}
 input[type=number]{padding:6px;border:1px solid #bcc6d6;border-radius:6px;width:75px}
@@ -29,13 +29,13 @@ table{border-collapse:collapse;width:100%;background:white}th,td{border:1px soli
 </style>
 </head>
 <body>
-<h1>Desk-Grade Commodity Calendar Builder V6.1 Fixed <span class="badge">Best Rule Version</span></h1>
+<h1>Desk-Grade Commodity Calendar Builder V8 Clean Save.3 Pen Fix <span class="badge">Best Rule Version</span></h1>
 <div class="small">Official expirations and last-day dates are entered manually. Pen dates are auto-derived as one business day before expiration/last day. Desk overlay cannot contain Pen labels without QA failure.</div>
 
 <div class="controls">
 <label>Month</label><input id="month" type="number" min="1" max="12" value="5">
 <label>Year</label><input id="year" type="number" value="2026">
-<label><input id="autoIndex" type="checkbox" checked> Auto DB/GSCI/WASDE</label>
+<label><input id="autoIndex" type="checkbox" checked> Auto DB/GSCI</label>
 <label><input id="showHolidays" type="checkbox" checked> Show holidays</label>
 <button onclick="build()">Build Calendar</button>
 <button class="gray" onclick="downloadCSV()">Download CSV</button>
@@ -43,7 +43,12 @@ table{border-collapse:collapse;width:100%;background:white}th,td{border:1px soli
 <button class="gray" onclick="loadAprilSample()">April Sample</button>
 <button class="gray" onclick="loadMaySample()">May Sample</button>
 <button class="gray" onclick="clearInputs()">Clear</button>
+<button class="gray" onclick="saveCurrentMonth()">Save Month</button>
+<button class="gray" onclick="loadSavedMonth()">Load Month</button>
+<button class="gray" onclick="copyAsNextMonth()">Copy as Next Month</button>
+<button class="gray" onclick="clearSavedData()">Clear Saved</button>
 </div>
+<div id="saveStatus" class="small tight noPrint"></div>
 
 <div class="two inputPanel">
 <div class="panel">
@@ -121,18 +126,37 @@ function requiredLabels(){
   "Rici Roll - Last Day","RICI Roll - 1","RICI Roll - 2"
  ];
 }
+function normLabel(s){
+ return String(s).toUpperCase().replace(/\s+/g," ").trim();
+}
 function hasReq(events,req){
+ const r=normLabel(req);
  return events.some(e=>{
-   if(req==="VIX") return e.label.includes("VIX");
-   return e.label===req;
+   const l=normLabel(e.label);
+   if(r==="VIX") return l.includes("VIX");
+   return l===r;
  });
 }
 function dateOf(events,label){
- let e=events.find(e=>label==="VIX"?e.label.includes("VIX"):e.label===label);
+ const target=normLabel(label);
+ let e=events.find(e=>{
+   const l=normLabel(e.label);
+   if(target==="VIX") return l.includes("VIX");
+   return l===target;
+ });
  return e?e.date:null;
 }
 function derivePens(events){
- const map=[["LAST DAY CL","Pen CL"],["LAST DAY NG","Pen NG"],["LAST DAY RB & HO","Pen RB & HO"],["LAST DAY BRENT","Pen Brent"]];
+ // Clear any previously derived Pen entries before rebuilding.
+ for(let i=events.length-1;i>=0;i--){
+   if(events[i].kind==="derived" && normLabel(events[i].label).startsWith("PEN ")) events.splice(i,1);
+ }
+ const map=[
+   ["LAST DAY CL","Pen CL"],
+   ["LAST DAY NG","Pen NG"],
+   ["LAST DAY RB & HO","Pen RB & HO"],
+   ["LAST DAY BRENT","Pen Brent"]
+ ];
  map.forEach(([last,pen])=>{
    const d=dateOf(events,last);
    if(d) add(events,bizAdd(parse(d),-1),pen,"derived from official last day","derived");
@@ -144,7 +168,6 @@ function buildEvents(y,m,official,overlay){
    let f=firstBizDays(y,m,12);
    ["DB Roll - 1","DB Roll - 2","DB Roll - 3","DB Roll - 4","DB Roll - Last"].forEach((x,i)=>add(events,f[i+1],x));
    ["GSCI - Day 1","GSCI - Day 2","GSCI - Day 3","GSCI - Day 4","GSCI - Last Day"].forEach((x,i)=>add(events,f[i+4],x));
-   add(events,f[6],"WASDE at Noon","rule/check","desk-check");
  }
  addJsonEvents(events,official,"official/input","official");
  addJsonEvents(events,overlay,"desk overlay","desk");
@@ -205,7 +228,7 @@ function renderNotes(){
 `Notes:
 Official Inputs: CME / ICE / CFE / ETF / RICI dates.
 Pen dates: auto-derived as one business day before the official last-day date.
-Desk Overlay: gasoil, notice dates, TAS In/Out, crypto, UGA, softs, grains, metals, and local desk reminders.
+Desk Overlay: WASDE, gasoil, notice dates, TAS In/Out, crypto, UGA, softs, grains, metals, and local desk reminders.
 Index Rolls: DB and GSCI windows may be auto-generated, but product-pair notes require monthly review.
 Final control: Do not publish until QA passes and source checklist is complete.`;
 }
@@ -250,6 +273,7 @@ function loadAprilSample(){
   "2026-04-30":["LAST DAY RB & HO","LAST DAY BRENT","RICI Roll - 2"]
  },null,2);
  document.getElementById("overlay").value=JSON.stringify({
+  "2026-04-09":["WASDE at Noon"],
   "2026-04-10":["Last Morning Gasoil"],
   "2026-04-16":["UGA"],
   "2026-04-21":["K Coffee - Last Before Notice"],
@@ -282,7 +306,7 @@ function loadMaySample(){
   "2026-05-29":["LAST DAY BRENT","LAST DAY RB & HO","RICI Roll - 2"]
  },null,2);
  document.getElementById("overlay").value=JSON.stringify({
-  "2026-05-12":["LAST MRNG GASOIL"],
+  "2026-05-12":["LAST MRNG GASOIL","WASDE at Noon"],
   "2026-05-15":["UGA"],
   "2026-05-26":["TAS In"],
   "2026-05-27":["TAS Out"],
@@ -291,7 +315,133 @@ function loadMaySample(){
  },null,2);
  setNotesMay(); build();
 }
-loadMaySample();
+
+
+function storageKeyFor(y,m){
+ return "deskCalendarV8_"+y+"_"+String(m).padStart(2,"0");
+}
+function storageKey(){
+ return storageKeyFor(document.getElementById("year").value, document.getElementById("month").value);
+}
+function currentState(){
+ return {
+   month:document.getElementById("month").value,
+   year:document.getElementById("year").value,
+   official:document.getElementById("official").value,
+   overlay:document.getElementById("overlay").value,
+   monthlyNotes:document.getElementById("monthlyNotes").value,
+   autoIndex:document.getElementById("autoIndex").checked,
+   showHolidays:document.getElementById("showHolidays").checked,
+   savedAt:new Date().toLocaleString()
+ };
+}
+function applyState(s, doBuild=true){
+ if(!s) return;
+ document.getElementById("month").value=s.month||document.getElementById("month").value;
+ document.getElementById("year").value=s.year||document.getElementById("year").value;
+ document.getElementById("official").value=s.official||"{}";
+ document.getElementById("overlay").value=s.overlay||"{}";
+ document.getElementById("monthlyNotes").value=s.monthlyNotes||"";
+ if(typeof s.autoIndex==="boolean") document.getElementById("autoIndex").checked=s.autoIndex;
+ if(typeof s.showHolidays==="boolean") document.getElementById("showHolidays").checked=s.showHolidays;
+ if(doBuild) build();
+}
+function saveCurrentMonth(){
+ try{
+   const key=storageKey();
+   localStorage.setItem(key, JSON.stringify(currentState()));
+   localStorage.setItem("deskCalendarV8_lastMonth", key);
+   setStatus("Saved "+key.replace("deskCalendarV8_","")+" at "+new Date().toLocaleTimeString());
+ }catch(e){ setStatus("Save failed: "+e.message); }
+}
+function loadSavedMonth(){
+ const key=storageKey();
+ const raw=localStorage.getItem(key);
+ if(!raw){ setStatus("No saved calendar found for "+key.replace("deskCalendarV8_","")+"."); build(); return false; }
+ applyState(JSON.parse(raw), true);
+ setStatus("Loaded saved calendar for "+key.replace("deskCalendarV8_",""));
+ return true;
+}
+function autoSaveCurrentMonth(){
+ try{
+   const key=storageKey();
+   localStorage.setItem(key, JSON.stringify(currentState()));
+   localStorage.setItem("deskCalendarV8_lastMonth", key);
+   setStatus("Auto-saved "+key.replace("deskCalendarV8_","")+" at "+new Date().toLocaleTimeString());
+ }catch(e){ setStatus("Auto-save failed: "+e.message); }
+}
+function switchMonthLoad(){
+ const key=storageKey();
+ const raw=localStorage.getItem(key);
+ if(raw){
+   applyState(JSON.parse(raw), true);
+   setStatus("Auto-loaded saved "+key.replace("deskCalendarV8_",""));
+ }else{
+   document.getElementById("official").value="{\n\n}";
+   document.getElementById("overlay").value="{\n\n}";
+   document.getElementById("monthlyNotes").value="";
+   build();
+   setStatus("No saved data for "+key.replace("deskCalendarV8_","")+". Enter dates or use a sample.");
+ }
+}
+function clearSavedData(){
+ if(confirm("Clear saved data for the current month/year?")){
+   localStorage.removeItem(storageKey());
+   setStatus("Saved data cleared for current month/year.");
+   build();
+ }
+}
+function copyAsNextMonth(){
+ saveCurrentMonth();
+ let s=currentState();
+ let m=parseInt(s.month,10), y=parseInt(s.year,10);
+ m+=1; if(m>12){m=1;y+=1;}
+ s.month=String(m);
+ s.year=String(y);
+ s.official="{\n\n}";
+ s.overlay="{\n\n}";
+ // keep notes as template but user can edit
+ applyState(s, true);
+ setStatus("Copied to next month. Official and overlay dates were cleared so you can enter verified dates.");
+ autoSaveCurrentMonth();
+}
+function setStatus(msg){
+ const el=document.getElementById("saveStatus");
+ if(el) el.textContent=msg;
+}
+function attachCleanSave(){
+ ["official","overlay","monthlyNotes","autoIndex","showHolidays"].forEach(id=>{
+   const el=document.getElementById(id);
+   if(el){
+     el.addEventListener("input",()=>{clearTimeout(window._autoSaveTimer);window._autoSaveTimer=setTimeout(autoSaveCurrentMonth,500);});
+     el.addEventListener("change",()=>{clearTimeout(window._autoSaveTimer);window._autoSaveTimer=setTimeout(autoSaveCurrentMonth,300);});
+   }
+ });
+ ["month","year"].forEach(id=>{
+   const el=document.getElementById(id);
+   if(el){
+     el.addEventListener("change",()=>{switchMonthLoad();});
+   }
+ });
+ window.addEventListener("beforeunload", autoSaveCurrentMonth);
+}
+function loadLastMonthOrSample(){
+ const last=localStorage.getItem("deskCalendarV8_lastMonth");
+ if(last){
+   const raw=localStorage.getItem(last);
+   if(raw){
+     applyState(JSON.parse(raw), true);
+     setStatus("Restored last saved month "+last.replace("deskCalendarV8_",""));
+     return;
+   }
+ }
+ // First-time default only
+ loadMaySample();
+ autoSaveCurrentMonth();
+}
+attachCleanSave();
+setTimeout(()=>{ loadLastMonthOrSample(); }, 150);
+// V8 loader above handles initial load.
 </script>
 </body>
 </html>
