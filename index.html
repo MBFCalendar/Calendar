@@ -2,51 +2,108 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Desk-Grade Commodity Calendar Builder V8 Clean Save.3 Pen Fix</title>
+<title>Desk-Grade Commodity Calendar Builder V12.2 Notes Visible.3 Pen Fix</title>
 <style>
-:root{--blue:#2f3a8f;--line:#24318f;--bg:#f6f7fb;--text:#172033}
-body{font-family:Arial,Helvetica,sans-serif;margin:22px;color:var(--text);background:var(--bg)}
-h1{margin:0;font-size:25px}.small{color:#526070;font-size:13px}.tight{margin-top:4px}
-.controls,.panel{background:#fff;border:1px solid #d8dee8;border-radius:12px;padding:14px;margin:12px 0}
-label{font-weight:700;margin-right:6px}input,textarea,button{font-size:14px}
-input[type=number]{padding:6px;border:1px solid #bcc6d6;border-radius:6px;width:75px}
-textarea{width:100%;height:245px;border:1px solid #bcc6d6;border-radius:8px;padding:8px;font-family:Consolas,monospace;font-size:13px}
-button{padding:8px 12px;border:0;border-radius:8px;background:#1d4ed8;color:white;font-weight:700;cursor:pointer;margin-right:6px}
-button.gray{background:#526070}.fail{background:#fef2f2;border:1px solid #ef4444;padding:10px;border-radius:8px}
-.pass{background:#ecfdf5;border:1px solid #10b981;padding:10px;border-radius:8px}
-.warn{background:#fff7ed;border:1px solid #f59e0b;padding:10px;border-radius:8px}
-.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border:2px solid var(--line);background:var(--line)}
-.dow,.day{background:white;min-height:113px;border:1px solid var(--line);padding:5px;position:relative;overflow:hidden}
-.dow{min-height:22px;background:var(--blue);color:#fff;text-align:center;font-weight:700}
-.weekend{background:#fffcae}.out{background:#cfcfcf}.num{font-weight:700;color:#1f2a70}
-.event{font-size:12px;line-height:1.13;margin-top:2px;padding:1px 2px}
-.official{font-weight:700}.red{background:#ef4444;color:#111;font-weight:700}.blue{background:#13aee5}.pink{background:#f0659d}.orange{background:#f59e0b}.yellow{background:#fff200}.green{background:#95d84b}
-table{border-collapse:collapse;width:100%;background:white}th,td{border:1px solid #d8dee8;padding:6px;text-align:left;font-size:13px}th{background:#eef2ff}
-.notes{font-size:12px;background:#ddd;border:2px solid var(--line);padding:7px;white-space:pre-wrap}
+:root{--blue:#2d2f92;--line:#2d2f92;--weekend:#ffff9b;--out:#c8c8c8;--text:#111}
+body{font-family:Arial,Helvetica,sans-serif;margin:10px;color:var(--text);background:white}
+h1{margin:0 0 6px;font-size:20px}
+h2{margin:0;text-align:center;background:var(--blue);color:white;font-size:22px;line-height:26px}
+.small{color:#444;font-size:12px}.tight{margin-top:4px}
+.controls,.panel{background:white;border:0;border-radius:0;padding:6px;margin:6px 0}
+.inputPanel{border:1px solid #d8dee8;border-radius:8px;padding:10px;margin:8px 0;background:#f7f8fb}
+label{font-weight:700;margin-right:6px}input,textarea,button{font-size:13px}
+input[type=number]{padding:5px;border:1px solid #bcc6d6;border-radius:5px;width:70px}
+textarea{width:100%;height:220px;border:1px solid #bcc6d6;border-radius:6px;padding:8px;font-family:Consolas,monospace;font-size:12px}
+button{padding:7px 10px;border:0;border-radius:6px;background:#1d4ed8;color:white;font-weight:700;cursor:pointer;margin:2px}
+button.gray{background:#526070}
+.fail{background:#fef2f2;border:1px solid #ef4444;padding:8px;border-radius:6px}
+.pass{background:#ecfdf5;border:1px solid #10b981;padding:8px;border-radius:6px}
+.warn{background:#fff7ed;border:1px solid #f59e0b;padding:8px;border-radius:6px}
+.calendarWrap{width:1024px;max-width:100%;margin:0 auto;border:2px solid var(--line)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:var(--line)}
+.dow,.day{background:white;min-height:105px;border:1px solid var(--line);padding:3px;position:relative;overflow:hidden}
+.dow{min-height:18px;background:var(--blue);color:#fff;text-align:center;font-weight:700;font-size:14px;line-height:18px;padding:0}
+.weekend{background:var(--weekend)}
+.out{background:var(--out)}
+.num{font-weight:700;color:#0000a0;font-size:15px;line-height:16px}
+.event{font-size:11px;line-height:1.08;margin-top:1px;padding:0 2px;color:#111}
+.official{font-weight:700}
+.red{background:#ff1717;color:#111;font-weight:700;text-align:left}
+.blue{background:#10aee3;color:#111}
+.pink{background:#f05a93;color:#555;font-weight:700}
+.orange{background:#f59d1a;color:#111}
+.yellow{background:#fff200;color:#111}
+.green{background:#8bd348;color:#111}
+.riskbar{font-size:9px;font-weight:700;line-height:1.0;margin:1px 0;padding:1px 2px;border-radius:0;color:#111}
+.risk-cl{background:#fff176}
+.risk-ng{background:#b6f2b6}
+.risk-rbho{background:#f9a8d4}
+.risk-brent{background:#fdba74}
+.risk-multi{outline:1px solid #111}
+
+.limitbar{font-size:9px;font-weight:700;line-height:1.0;margin:1px 0;padding:1px 2px;border-radius:0;color:#111;border-left:3px solid #111}
+.limit-cl{background:#ddd6fe;border-left-color:#6d28d9}
+.limit-ng{background:#bfdbfe;border-left-color:#1d4ed8}
+.limit-rbho{background:#fecdd3;border-left-color:#be123c}
+.limit-brent{background:#fed7aa;border-left-color:#c2410c}
+
+table{border-collapse:collapse;width:100%;background:white}th,td{border:1px solid #d8dee8;padding:5px;text-align:left;font-size:12px}th{background:#eef2ff}
+.notes{font-size:12px;background:#d0d0d0;border-top:2px solid var(--line);padding:6px;white-space:pre-wrap;line-height:1.15;margin:0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .badge{display:inline-block;padding:2px 6px;border-radius:999px;background:#eef2ff;margin-left:6px;font-size:12px}
-@media print{body{background:white;margin:0}.controls,.inputPanel,.noPrint{display:none}.panel{border:0;margin:0}.day{min-height:104px}.event{font-size:11px}.two{display:block}}
+.noPrint{}
+@page{size:landscape;margin:0.25in}
+@media print{
+ body{background:white;margin:0}
+ .controls,.inputPanel,#qa,#eventTable,#saveStatus,h1,.noPrint{display:none!important}
+ .panel{border:0;margin:0;padding:0}
+ .calendarWrap{width:100%;border:2px solid var(--line);page-break-inside:avoid}
+ .day{min-height:92px}
+ .event{font-size:10px}
+ .notes{font-size:10px}
+}
+
+.calendarNotes{
+  width:1024px;
+  max-width:100%;
+  margin:0 auto 8px auto;
+  background:#d0d0d0;
+  border-left:2px solid var(--line);
+  border-right:2px solid var(--line);
+  border-bottom:2px solid var(--line);
+  padding:6px;
+  white-space:pre-wrap;
+  font-size:12px;
+  line-height:1.15;
+}
+@media print{
+ .calendarNotes{font-size:10px;margin:0;border-left:2px solid var(--line);border-right:2px solid var(--line);border-bottom:2px solid var(--line)}
+}
 </style>
 </head>
 <body>
-<h1>Desk-Grade Commodity Calendar Builder V8 Clean Save.3 Pen Fix <span class="badge">Best Rule Version</span></h1>
+<h1>Desk-Grade Commodity Calendar Builder V12.2 Notes Visible.3 Pen Fix <span class="badge">Best Rule Version</span></h1>
 <div class="small">Official expirations and last-day dates are entered manually. Pen dates are auto-derived as one business day before expiration/last day. Desk overlay cannot contain Pen labels without QA failure.</div>
 
 <div class="controls">
 <label>Month</label><input id="month" type="number" min="1" max="12" value="5">
 <label>Year</label><input id="year" type="number" value="2026">
 <label><input id="autoIndex" type="checkbox" checked> Auto DB/GSCI</label>
+<label><input id="showRiskWindows" type="checkbox" checked> Highlight expiration windows</label>
+<label><input id="showLimitWindows" type="checkbox" checked> Highlight trading-limit windows</label>
 <label><input id="showHolidays" type="checkbox" checked> Show holidays</label>
 <button onclick="build()">Build Calendar</button>
 <button class="gray" onclick="downloadCSV()">Download CSV</button>
 <button class="gray" onclick="window.print()">Print / Save PDF</button>
 <button class="gray" onclick="loadAprilSample()">April Sample</button>
 <button class="gray" onclick="loadMaySample()">May Sample</button>
+<button class="gray" onclick="loadJuneSample()">June Sample</button>
 <button class="gray" onclick="clearInputs()">Clear</button>
 <button class="gray" onclick="saveCurrentMonth()">Save Month</button>
 <button class="gray" onclick="loadSavedMonth()">Load Month</button>
 <button class="gray" onclick="copyAsNextMonth()">Copy as Next Month</button>
 <button class="gray" onclick="clearSavedData()">Clear Saved</button>
+<button class="gray" onclick="renderNotes()">Refresh Notes</button>
 </div>
 <div id="saveStatus" class="small tight noPrint"></div>
 
@@ -70,6 +127,7 @@ table{border-collapse:collapse;width:100%;background:white}th,td{border:1px soli
 
 <div id="qa" class="panel"></div>
 <div id="calendar" class="panel"></div>
+<div id="calendarNotes" class="calendarNotes"></div>
 <div id="eventTable" class="panel"></div>
 <div id="notes" class="panel notes"></div>
 
@@ -204,19 +262,96 @@ function renderQA(q){
  if(q.warnings.length) html+=`<br><div class="warn"><b>Warnings</b><br>${q.warnings.join("<br>")}</div>`;
  document.getElementById("qa").innerHTML=html;
 }
+
+function commodityLastDayMap(events){
+ const specs=[
+   {last:"LAST DAY CL", name:"CL", cls:"risk-cl"},
+   {last:"LAST DAY NG", name:"NG", cls:"risk-ng"},
+   {last:"LAST DAY RB & HO", name:"RB/HO", cls:"risk-rbho"},
+   {last:"LAST DAY BRENT", name:"Brent", cls:"risk-brent"}
+ ];
+ let markers={};
+ specs.forEach(s=>{
+   const d=dateOf(events,s.last);
+   if(!d) return;
+   const exp=parse(d);
+   const dates=[
+     {date:fmt(bizAdd(exp,-2)), tag:s.name+" T-2", cls:s.cls},
+     {date:fmt(bizAdd(exp,-1)), tag:s.name+" T-1", cls:s.cls},
+     {date:fmt(exp), tag:s.name+" EXP", cls:s.cls}
+   ];
+   dates.forEach(x=>{
+     if(!markers[x.date]) markers[x.date]=[];
+     markers[x.date].push({tag:x.tag, cls:x.cls});
+   });
+ });
+ return markers;
+}
+function renderRiskMarkers(date, markers){
+ const cb=document.getElementById("showRiskWindows");
+ if(!cb || !cb.checked) return "";
+ const arr=markers[date]||[];
+ let out="";
+ arr.forEach(x=>{
+   const multi=arr.length>1 ? " risk-multi" : "";
+   out+=`<div class="riskbar ${x.cls}${multi}">${x.tag}</div>`;
+ });
+ return out;
+}
+
+
+function commodityLimitMap(events){
+ const specs=[
+   {last:"LAST DAY CL", name:"CL", cls:"limit-cl"},
+   {last:"LAST DAY NG", name:"NG", cls:"limit-ng"},
+   {last:"LAST DAY RB & HO", name:"RB/HO", cls:"limit-rbho"},
+   {last:"LAST DAY BRENT", name:"Brent", cls:"limit-brent"}
+ ];
+ let markers={};
+ specs.forEach(s=>{
+   const d=dateOf(events,s.last);
+   if(!d) return;
+   const exp=parse(d);
+   const dates=[
+     {date:fmt(bizAdd(exp,-3)), tag:s.name+" LIMIT T-3", cls:s.cls},
+     {date:fmt(bizAdd(exp,-2)), tag:s.name+" LIMIT T-2", cls:s.cls},
+     {date:fmt(bizAdd(exp,-1)), tag:s.name+" LIMIT T-1", cls:s.cls}
+   ];
+   dates.forEach(x=>{
+     if(!markers[x.date]) markers[x.date]=[];
+     markers[x.date].push({tag:x.tag, cls:x.cls});
+   });
+ });
+ return markers;
+}
+function renderLimitMarkers(date, markers){
+ const cb=document.getElementById("showLimitWindows");
+ if(!cb || !cb.checked) return "";
+ const arr=markers[date]||[];
+ let out="";
+ arr.forEach(x=>{
+   out+=`<div class="limitbar ${x.cls}">${x.tag}</div>`;
+ });
+ return out;
+}
+
 function renderCalendar(y,m,events){
+ const riskMarkers=commodityLastDayMap(events);
+ const limitMarkers=commodityLimitMap(events);
  let title=new Date(Date.UTC(y,m-1,1)).toLocaleString("en-US",{month:"long",year:"numeric",timeZone:"UTC"});
- let html=`<h2>${title}</h2><div class="grid">`;
+ let html=`<div class="calendarWrap"><h2>${title}</h2><div class="grid">`;
  dows.forEach(d=>html+=`<div class="dow">${d}</div>`);
  let first=dt(y,m,1), start=new Date(first.getTime()-first.getUTCDay()*ms);
  for(let i=0;i<42;i++){
   let d=new Date(start.getTime()+i*ms), date=fmt(d), inMonth=d.getUTCMonth()+1===m;
   html+=`<div class="day ${!inMonth?"out":isWeekend(d)?"weekend":""}"><div class="num">${inMonth?d.getUTCDate():""}</div>`;
   let hol=holidayName(d); if(inMonth&&hol&&document.getElementById("showHolidays").checked)html+=`<div class="event red" style="text-align:center;margin-top:18px">${hol}</div>`;
+  if(inMonth) html+=renderLimitMarkers(date,limitMarkers);
+  if(inMonth) html+=renderRiskMarkers(date,riskMarkers);
   events.filter(e=>e.date===date).forEach(e=>html+=`<div class="event ${e.cat} ${e.kind==="official"?"official":""}">${e.label}</div>`);
   html+=`</div>`;
  }
- html+="</div>"; document.getElementById("calendar").innerHTML=html;
+ html+="</div></div>"; document.getElementById("calendar").innerHTML=html;
 }
 function renderTable(events){
  let html="<h2>Event Audit Table</h2><table><tr><th>Date</th><th>Event</th><th>Kind</th><th>Source</th></tr>";
@@ -224,13 +359,14 @@ function renderTable(events){
  html+="</table>"; document.getElementById("eventTable").innerHTML=html;
 }
 function renderNotes(){
- document.getElementById("notes").textContent = document.getElementById("monthlyNotes").value || 
-`Notes:
-Official Inputs: CME / ICE / CFE / ETF / RICI dates.
-Pen dates: auto-derived as one business day before the official last-day date.
-Desk Overlay: WASDE, gasoil, notice dates, TAS In/Out, crypto, UGA, softs, grains, metals, and local desk reminders.
-Index Rolls: DB and GSCI windows may be auto-generated, but product-pair notes require monthly review.
-Final control: Do not publish until QA passes and source checklist is complete.`;
+ const text=document.getElementById("monthlyNotes") ? document.getElementById("monthlyNotes").value : "";
+ const cn=document.getElementById("calendarNotes");
+ if(cn){
+   cn.textContent=text || "Monthly notes not entered.";
+   cn.style.display="block";
+ }
+ const n=document.getElementById("notes");
+ if(n){ n.style.display="none"; n.textContent=""; }
 }
 function downloadCSV(){
  let csv="date,event,kind,source\n"+lastEvents.map(e=>`${e.date},"${e.label.replaceAll('"','""')}",${e.kind},${e.source}`).join("\n");
@@ -332,6 +468,8 @@ function currentState(){
    monthlyNotes:document.getElementById("monthlyNotes").value,
    autoIndex:document.getElementById("autoIndex").checked,
    showHolidays:document.getElementById("showHolidays").checked,
+   showRiskWindows:document.getElementById("showRiskWindows").checked,
+   showLimitWindows:document.getElementById("showLimitWindows").checked,
    savedAt:new Date().toLocaleString()
  };
 }
@@ -344,6 +482,8 @@ function applyState(s, doBuild=true){
  document.getElementById("monthlyNotes").value=s.monthlyNotes||"";
  if(typeof s.autoIndex==="boolean") document.getElementById("autoIndex").checked=s.autoIndex;
  if(typeof s.showHolidays==="boolean") document.getElementById("showHolidays").checked=s.showHolidays;
+ if(typeof s.showRiskWindows==="boolean") document.getElementById("showRiskWindows").checked=s.showRiskWindows;
+ if(typeof s.showLimitWindows==="boolean") document.getElementById("showLimitWindows").checked=s.showLimitWindows;
  if(doBuild) build();
 }
 function saveCurrentMonth(){
@@ -410,7 +550,7 @@ function setStatus(msg){
  if(el) el.textContent=msg;
 }
 function attachCleanSave(){
- ["official","overlay","monthlyNotes","autoIndex","showHolidays"].forEach(id=>{
+ ["official","overlay","monthlyNotes","autoIndex","showHolidays","showRiskWindows","showLimitWindows"].forEach(id=>{
    const el=document.getElementById(id);
    if(el){
      el.addEventListener("input",()=>{clearTimeout(window._autoSaveTimer);window._autoSaveTimer=setTimeout(autoSaveCurrentMonth,500);});
@@ -425,6 +565,43 @@ function attachCleanSave(){
  });
  window.addEventListener("beforeunload", autoSaveCurrentMonth);
 }
+
+function loadJuneSample(){
+ document.getElementById("month").value=6; document.getElementById("year").value=2026;
+ document.getElementById("official").value=JSON.stringify({
+  "2026-06-01": ["Rici Roll - Last Day", "USO - 1"],
+  "2026-06-02": ["USO - 2"],
+  "2026-06-03": ["USO - 3"],
+  "2026-06-04": ["USO - 4"],
+  "2026-06-05": ["USO - Last"],
+  "2026-06-08": ["GSCI - Day 1"],
+  "2026-06-09": ["GSCI - Day 2"],
+  "2026-06-10": ["GSCI - Day 3"],
+  "2026-06-11": ["GSCI - Day 4"],
+  "2026-06-12": ["GSCI - Last Day", "UNG - 1"],
+  "2026-06-15": ["UNG - 2"],
+  "2026-06-16": ["CL Opts Exp", "UNG - 3", "BNO - 1"],
+  "2026-06-17": ["UNG - Last", "BNO - 2", "AM K VIX Expiry"],
+  "2026-06-18": ["BNO - 3"],
+  "2026-06-19": ["LAST DAY CL", "BNO - Last"],
+  "2026-06-24": ["NG Opts Exp"],
+  "2026-06-25": ["RB & HO Opts Exp", "Brent Opts Exp"],
+  "2026-06-26": ["LAST DAY NG", "RICI Roll - 1"],
+  "2026-06-29": ["LAST DAY RB & HO", "LAST DAY BRENT", "RICI Roll - 2"]
+ },null,2);
+ document.getElementById("overlay").value=JSON.stringify({
+  "2026-06-11": ["WASDE at Noon", "LAST MRNG GASOIL"],
+  "2026-06-16": ["UGA"],
+  "2026-06-24": ["TAS In"],
+  "2026-06-25": ["TAS Out"],
+  "2026-06-26": ["K Crypto Expiry"],
+  "2026-06-29": ["M Gold & Rates - Last Before Notice"]
+ },null,2);
+ document.getElementById("monthlyNotes").value='DB Rolling (estimated):\nN/Q Heating Oil & Gasoil; and Q/U Brent\n\nGSCI Rolling:\nN/Q Energies (except Q/U Brent), N/Q LME Metals & Lean Hogs;\nand N/U Live Cattle & Gold\n\nBCOM Rolling (same days as GSCI):\nN/Q Energies (except Q/U Brent), N/Q Lean Hogs;\nand N/U Live Cattle & Gold\n\nRICI Rolling:\nQ/U Energies (except U/V Brent), Q/U LME Metals;\nQ/V Robusta, Cocoa, Corn & OJ;\nQ/X Platinum & Sugar;\nQ/Z Soybeans;\nand Q/F Cotton, Soybean Meal & Soybean Oil\n\nETF and index roll windows are estimated and should be verified against issuer/index schedules and market flow.';
+ build();
+ saveCurrentMonth();
+}
+
 function loadLastMonthOrSample(){
  const last=localStorage.getItem("deskCalendarV8_lastMonth");
  if(last){
